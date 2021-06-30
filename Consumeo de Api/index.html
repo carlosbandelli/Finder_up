@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque</title>
+
+    <hr>
+    <h4>Lista do Estoque</h4>
+    <ul id= "padaria"></ul>
+    <hr>
+    <h4>Novo Item</h4>
+    <input type="text" name="title" id="title" placeholder="Item"><br>
+    <input type="number" name="quantidade" id="quantidade" placeholder="Quantidade"><br>
+    <input type="text" name="nome" id="nome" placeholder="Nome"><br>
+    <button type="button" onclick="createItem()">Criar</button> <!--evento criado para cadastrar o novo item -->
+    <hr>
+    <h4>Editar Item</h4>
+    <input type="text" name="idEdit" id="idEdit" placeholder="ID" readonly><br>
+    <input type="text" name="titleEdit" id="titleEdit" placeholder="Item"><br>
+    <input type="number" name="quantidadeEdit" id="quantidadeEdit" placeholder="Quantidade"><br>
+    <input type="text" name="nomeEdit" id="nomeEdit" placeholder="Nome"><br>
+    <button type="button" onclick="updateItem()">Atualizar Item</button> <!--evento criado para cadastrar o novo item -->
+
+
+</head>
+<body>
+    
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    //função criada para evento
+
+    function createItem(){ 
+        // Input usados com referncia de coleta de dados
+        var titleInput = document.getElementById("title")
+        var quantidadeInput = document.getElementById("quantidade")
+        var nomeInput = document.getElementById("nome")
+
+        // Pegando os valores dos campos dos Inputs
+
+        var ingredientes = {
+            title: titleInput.value,
+            qtd: quantidadeInput.value,
+            user: nomeInput.value
+        }
+        console.log(ingredientes)
+
+        // Enviando dados de cadastro para API
+
+        axios.post("http://localhost:45678/estoque", ingredientes).then(response => {// Para passar dados com Axios eu adiciono o Json que eu fiz, nesse caso ingredientes
+
+            if(response.status == 200){ //logica de validação
+                alert("Item cadastrado!")  //Quando cadastro for realizado com sucesso ele mostrar um alert
+                location.reload() // metodo utilizado para fazer reload automatico
+            }
+
+    }).catch(err => {
+        console.log(err)
+    })
+}
+ 
+    // Função criada para deleção 
+
+    function deleteItem(listItem){ 
+        
+        var id = listItem.getAttribute("data-id")
+        axios.delete("http://localhost:45678/estoque/"+id).then(response => {
+            alert("Game deletado")
+            location.reload() 
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    // Função criada para edição
+
+    function loadForm(listItem){        
+        var id = listItem.getAttribute("data-id")
+        var title = listItem.getAttribute("data-title")
+        var qtd = listItem.getAttribute("data-quantidade")
+        var nome = listItem.getAttribute("data-nome")
+        document.getElementById("idEdit").value = id
+        document.getElementById("titleEdit").value = title
+        document.getElementById("quantidadeEdit").value = qtd
+        document.getElementById("nomeEdit").value = nome 
+    }
+
+    // Função criada para Atualizar
+
+    function updateItem(){
+        // Input usados com referncia de coleta de dados
+        var idInput = document.getElementById("idEdit")
+        var titleInput = document.getElementById("titleEdit")
+        var quantidadeInput = document.getElementById("quantidadeEdit")
+        var nomeInput = document.getElementById("nomeEdit")
+
+        // Pegando os valores dos campos dos Inputs
+
+        var ingredientes = {
+            title: titleInput.value,
+            qtd: quantidadeInput.value,
+            user: nomeInput.value
+        }
+        
+        var id = idInput.value //variavel criada para id
+
+        // Atualizando dados de edição para API
+
+        axios.put("http://localhost:45678/estoque/"+id, ingredientes).then(response => {// Para passar dados com Axios eu adiciono o Json que eu fiz, nesse caso ingredientes
+
+            if(response.status == 200){ //logica de validação
+                alert("Item Atualizado!!")  //Quando cadastro for realizado com sucesso ele mostrar um alert
+                location.reload() // metodo utilizado para fazer reload automatico
+            }
+
+    }).catch(err => {
+        console.log(err)
+    })
+    }
+
+
+
+    axios.get("http://localhost:45678/estoque").then(response =>{
+        var estoque = response.data
+        var list = document.getElementById("padaria")
+
+        //Criação de itens dentro da lista
+        
+        estoque.forEach(material => {
+            console.log(material)         
+            var item = document.createElement("li") //criação de lista, elemento que quero criar, uma  lista
+
+            //Atributos costumizados
+
+            item.setAttribute("data-id",material.id)// coloca-se o id do input primeiro,depois usa a variavel do forEach e junto o nome da coluna 
+            item.setAttribute("data-title", material.title)
+            item.setAttribute("data-quantidade", material.qtd)
+            item.setAttribute("data-nome", material.user)
+
+            item.innerHTML = "Id: " + material.id + " - "+ material.title + " - Quantidade: " + material.qtd + " - Nome: " + material.user//Vou pegar o item e vou colocar o conteudo dele
+
+            //Criação de Botoão deletar
+            
+            var deleteBtn = document.createElement("button") // botão criado
+            deleteBtn.innerHTML = "Deletar" // Conteudo do botão
+            deleteBtn.addEventListener("click",function(){ //Linkando com o botão deleteBtn, criando uma função dentro de outra 
+                deleteItem(item) // toda vez que clicar nesse botão ele chama a função deleteItem
+            })
+
+            //Criação do botão Editar
+
+            var editBtn = document.createElement("button")
+            editBtn.innerHTML = "Editar"
+            editBtn.addEventListener("click", function(){
+                loadForm(item)
+            })
+
+        
+
+            // Criação de item dinamicamente
+
+            
+            item.appendChild(deleteBtn) //botão de deleção
+            item.appendChild(editBtn) //Botão editar
+            list.appendChild(item) // Agora pego minha lista e adiciono o conteudo nela que será meu item
+        })
+        
+    }).catch(error => {
+        console.log(error)
+    })
+
+</script>
+</html>
