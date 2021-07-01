@@ -1,6 +1,7 @@
 # Finder Up
 Esta Api foi feita apenas para uso de conhecimento e fins didaticos tendo como objetivo usar os conceitos de metodo C.R.U.D.
-Para fins didaticos esotu utilizando uma array para simular um banco de dados falso
+Para fins didaticos esotu utilizando uma array para simular um banco de dados falso.
+Para utilizar o html da página entre na pasta **Consumo de api**, lá  estará disponibilozado o **HTML**
 
 ### Array Banco de dados falso
 
