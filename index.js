@@ -1,10 +1,21 @@
+// BIBLIOTECAS
 const express = require("express")
 const app = express()
 const cors = require("cors")
+const jwt = require("jsonwebtoken")
+
+const JWTSecret = "FinderUp" // Senha de acesso para gerar token
 
 app.use(cors())
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
+
+function auth(req,res,next){ //Middleware
+
+    const authToken = req.headers['authorization']
+    console.log(authToken)
+    next() // reponsavel por passar requisição do middleware para o roto que o usuario quer ascessar
+}
 
 
 
@@ -34,12 +45,33 @@ var DB = {
 
         }
 
+    ],
+
+    users: [
+        {
+            id:1,
+            user: "Naruto",
+            email: "hokage@konoha.com",
+            password: "sasuke",
+        },
+        {
+           id:3,
+           user: "Elizabeth",
+           email: "bretanha@deusas.com", 
+           password: "meliodas"
+        },
+        {
+            id:100,
+            user: "Escanor",
+            email:"Leão@orgulho.com",
+            password: "rosa"
+        }
     ]
 }
 
 //Retorna a listagem de todos os produtos da dispensa
 
-app.get("/estoque", (req,res) => { 
+app.get("/estoque",auth, (req,res) => { 
     res.statusCode = 200
     res.json(DB.padaria)
 })
@@ -150,6 +182,43 @@ app.put("/estoque/:id", (req,res) => {
 
 
 
+})
+
+// Rotas especificas para login, essa rota pra verrificar se existe o usuario no banco de dados
+
+app.post("/auth",(req,res)=>{
+    var {email, password} = req.body
+
+    if(email != undefined){
+
+        var user = DB.users.find(u => u.email == email)
+
+        if(user != undefined){
+            if(user.password == password){
+
+            jwt.sign({id: user.id, email: user.email }, JWTSecret,{expiresIn:'48h'},(err,token)=>{ //payload - informação que estão dentro do token e tempo de expiração
+                if(err){
+                    res.status(400)
+                    res.json({err:"Falha interna"})
+                }else{
+                    res.status(200)
+                    res.json({token: token })
+                }
+            })            
+            }else{
+                res.status(401)
+                res.json({err: "Credenciais invalidas"})
+            }
+        }else{
+            res.status(404)
+            res.json({err: "O E-mail enviado Não existe na base de dados!"})
+        }
+
+    }else{
+        res.status(400)
+        res.json({err: "O Email enviado é invalido"})
+    }
+    
 })
 
 
