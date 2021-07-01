@@ -11,10 +11,31 @@ app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
 function auth(req,res,next){ //Middleware
-
     const authToken = req.headers['authorization']
-    console.log(authToken)
-    next() // reponsavel por passar requisição do middleware para o roto que o usuario quer ascessar
+
+    //Logica de Validação de Token
+
+    if(authToken != undefined){
+
+        const bearer = authToken.split(' ') // Token foi divido em dois array para separar o tipo do token com o token
+        var token = bearer[1] // Variavel craida para para receber só o token
+
+        jwt.verify(token, JWTSecret, (err, data) => {
+            if(err){
+                res.status(401)
+                res.json({err: "Token Invalido!"})
+            }else{
+                req.token = token
+                req.loggedUser = {id: data.id,email:data.email}
+                next() // reponsavel por passar requisição do middleware para a rota que o usuario quer ascessar
+            }
+        })
+
+    }else{
+        res.status(401)
+        res.json({err:"Token inválido!"})
+    }   
+    
 }
 
 
@@ -72,13 +93,14 @@ var DB = {
 //Retorna a listagem de todos os produtos da dispensa
 
 app.get("/estoque",auth, (req,res) => { 
+
     res.statusCode = 200
-    res.json(DB.padaria)
+    res.json({ user: req.loggedUser, estoque: DB.padaria})
 })
 
 //Rota para retorno de um produto do estoque
 
-app.get("/estoque/:id",(req,res) => {
+app.get("/estoque/:id",auth,(req,res) => {
 
     if(isNaN(req.params.id)){ // IsNaN para veirificar se o ID colocadp é um numero
         res.sendStatus(400) // Status code de erro
@@ -100,9 +122,9 @@ app.get("/estoque/:id",(req,res) => {
 })
 
 
-// Criação de Dados
+// Criação de Itens
 
-app.post("/estoque",(req,res)=>{
+app.post("/estoque",auth,(req,res)=>{
 
     var {title,qtd, user} = req.body
 
@@ -119,7 +141,7 @@ app.post("/estoque",(req,res)=>{
 
 //Rota de deleção
 
-app.delete("/estoque/:id", (req,res)=> {
+app.delete("/estoque/:id", auth, (req,res)=> {
 
     if(isNaN(req.params.id)){ // IsNaN para veirificar se o ID colocadp é um numero
         res.sendStatus(400) // Status code de erro
@@ -184,7 +206,9 @@ app.put("/estoque/:id", (req,res) => {
 
 })
 
-// Rotas especificas para login, essa rota pra verrificar se existe o usuario no banco de dados
+// Rotas especificas para login
+// Rota especifica pra gerar token
+// essa rota pra verificar se existe o usuario no banco de dados
 
 app.post("/auth",(req,res)=>{
     var {email, password} = req.body

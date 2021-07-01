@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque</title>
 
+    <h2>Login</h2>
+    <input type="text" name="email" id="email" placeholder="email"><br>
+    <input type="text" name="password" id= "password" placeholder="*****" >
+    <button onclick="login()">Entrar</button>
+
     <hr>
     <h4>Lista do Estoque</h4>
     <ul id= "padaria"></ul>
@@ -30,6 +35,42 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+
+var axiosConfig = {
+        headers: {
+            authorization: "Bearer " + localStorage.getItem("token")
+        }
+    }
+
+    function login(){
+        var emailField = document.getElementById("email")
+        var passwordField = document.getElementById("password")
+
+        var email = emailField.value
+        var password = passwordField.value
+
+        axios.post("http://localhost:45678/auth",{
+            email,
+            password,
+        }).then(res => {
+            //Gerando token dinamico
+            var token = res.data.token
+            localStorage.setItem("token", token)
+            axiosConfig.headers.Authorization = "Bearer " + localStorage.getItem("token")
+            alert("Logado!")
+            location.reload()
+        }).carch(err =>{
+            alert("Login Invalido!")
+        })
+
+    }
+
+    var axiosConfig = {
+        headers: {
+            authorization: "Bearer " + localStorage.getItem("token")
+        }
+    }
+
     //função criada para evento
 
     function createItem(){ 
@@ -66,7 +107,7 @@
     function deleteItem(listItem){ 
         
         var id = listItem.getAttribute("data-id")
-        axios.delete("http://localhost:45678/estoque/"+id).then(response => {
+        axios.delete("http://localhost:45678/estoque/"+id,axiosConfig).then(response => {
             alert("Game deletado")
             location.reload() 
         }).catch(err => {
@@ -108,7 +149,7 @@
 
         // Atualizando dados de edição para API
 
-        axios.put("http://localhost:45678/estoque/"+id, ingredientes).then(response => {// Para passar dados com Axios eu adiciono o Json que eu fiz, nesse caso ingredientes
+        axios.put("http://localhost:45678/estoque/"+id, ingredientes, axiosConfig).then(response => {// Para passar dados com Axios eu adiciono o Json que eu fiz, nesse caso ingredientes
 
             if(response.status == 200){ //logica de validação
                 alert("Item Atualizado!!")  //Quando cadastro for realizado com sucesso ele mostrar um alert
@@ -122,13 +163,14 @@
 
 
 
-    axios.get("http://localhost:45678/estoque").then(response =>{
+    axios.get("http://localhost:45678/estoque", axiosConfig ).then(response =>{
+        var retorno = response.data
         var estoque = response.data
         var list = document.getElementById("padaria")
 
         //Criação de itens dentro da lista
         
-        estoque.forEach(material => {
+        retorno.estoque.forEach(material => {
             console.log(material)         
             var item = document.createElement("li") //criação de lista, elemento que quero criar, uma  lista
 
