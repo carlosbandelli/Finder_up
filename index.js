@@ -38,6 +38,41 @@ function auth(req,res,next){ //Middleware
     
 }
 
+//HATEOS
+
+var HATEOAS = (id) => {
+    return [
+    {
+     
+        href: "http://localhost:45678/estoque/"+id,
+        method: "DELETE",
+        rel:"delete_estoque"
+
+    },
+    {
+        href: "http://localhost:45678/estoque/"+id,
+        method: "PUT",
+        rel:"edit_estoque"
+
+    },
+    {
+        href: "http://localhost:45678/estoque"+id,
+        method: "GET",
+        rel: "get_estoque"
+    },
+    {
+        href: "http://localhost:45678/estoque",
+        method: "GET",
+        rel: "get_all_estoque"
+    },
+    {
+        href: "http://localhost:45678/estoque"+id,
+        method: "POST",
+        rel: "post_estoque"+id
+    }
+    ]
+}
+
 
 
 var DB = {
@@ -94,8 +129,10 @@ var DB = {
 
 app.get("/estoque",auth, (req,res) => { 
 
+    
+
     res.statusCode = 200
-    res.json({ user: req.loggedUser, estoque: DB.padaria})
+    res.json({ user: req.loggedUser, estoque: DB.padaria, _links: HATEOAS(':id')}) //Dessa forma aparece o id sem valor, mostrando que se alterar o id voce pode aplicar os metodos, mostrado pelo HATEOAS
 })
 
 //Rota para retorno de um produto do estoque
@@ -108,13 +145,15 @@ app.get("/estoque/:id",auth,(req,res) => {
         
         var id = parseInt(req.params.id)//conversão de ID para numero inteiro
 
+        
+
         var material = DB.padaria.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
 
         
         //Logica para verificação de Material
         if(material != undefined){ //Se o material existir ele mostra o material 
             res.statusCode = 200;
-            res.json(material)
+            res.json({material, _links: HATEOAS(id)}) //Dessa forma mostra o id sendo dinamico, e ja mostrando o link com o id para fazer os methodos do HATEOAS
         }else{
             res.sendStatus(404) //Se não existir ele mostra o erro
         }
@@ -149,7 +188,7 @@ app.delete("/estoque/:id", auth, (req,res)=> {
         
         var id = parseInt(req.params.id)//conversão de ID para numero inteiro
         var index = DB.padaria.findIndex(m => m.id == id) 
-        if(index == -1){
+        if(index == -1){ //se retorna -1 o elemnto não existe
             res.sendStatus(404)
         }else{
             DB.padaria.splice(index,1)// Aqui eu deleto um elemento  que esta nesse index
