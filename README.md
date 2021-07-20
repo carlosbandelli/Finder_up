@@ -7,25 +7,25 @@ Para utilizar o html da página entre na pasta **Consumo de api**, lá  estará 
 
 ```
 var DB = {
-    padaria:[
+    equipamentos:[
 
         {
             id: 23,
-            title: "Farinha de trigo",
+            title: "Motor",
             qtd: 10,
-            user: "Naruto"
+            user: "Carlos"
 
         },
         {
             id: 9,
-            title: "Fermento",
+            title: "Driver",
             qtd: 15,
             user: "Elizabeth"
 
         },
         {
             id:13,
-            title: "Leite integral",
+            title: "Conversor",
             qtd: 20,
             user: "Escanor" 
 
@@ -37,25 +37,24 @@ var DB = {
     users: [
         {
             id:1,
-            user: "Naruto",
-            email: "hokage@konoha.com",
-            password: "sasuke",
+            user: "Carlos",
+            email: "Carlos@carlos.com.br",
+            password: "carlos",
         },
         {
            id:3,
            user: "Elizabeth",
-           email: "bretanha@deusas.com", 
+           email: "Eli@beth.com.br", 
            password: "meliodas"
         },
         {
             id:100,
             user: "Escanor",
-            email:"Leão@orgulho.com",
+            email:"Lion@pride.com.br",
             password: "rosa"
         }
     ]
 }
-
 
 ```
 
@@ -125,7 +124,7 @@ esse endpoint é responsável para retorna a listagem de todos os itens cadastra
 app.get("/estoque",auth, (req,res) => { 
 
     res.statusCode = 200
-    res.json({ user: req.loggedUser, estoque: DB.padaria})
+    res.json({ user: req.loggedUser, estoque: DB.equipamentos})
 })
 
 ```
@@ -143,24 +142,24 @@ Exemplo de resposta:
 {
     "user": {
         "id": 1,
-        "email": "hokage@konoha.com"
+        "email": "Carlos@carlos.com.br"
     },
     "estoque": [
         {
             "id": 23,
-            "title": "Farinha de trigo",
+            "title": "Motor",
             "qtd": 10,
-            "user": "Naruto"
+            "user": "Carlos"
         },
         {
             "id": 9,
-            "title": "Fermento",
+            "title": "Driver",
             "qtd": 15,
             "user": "Elizabeth"
         },
         {
             "id": 13,
-            "title": "Leite integral",
+            "title": "Conversor",
             "qtd": 20,
             "user": "Escanor"
         }
@@ -189,13 +188,13 @@ esse endpoint é responsável para retorna um item com o id especifico do banco 
 ```
 app.get("/estoque/:id",auth,(req,res) => {
 
-    if(isNaN(req.params.id)){ // IsNaN para veirificar se o ID colocadp é um numero
+    if(isNaN(req.params.id)){ // IsNaN para veirificar se o ID colocado é um numero
         res.sendStatus(400) // Status code de erro
     }else{
         
         var id = parseInt(req.params.id)//conversão de ID para numero inteiro
 
-        var material = DB.padaria.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
+        var material = DB.equipamentos.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
 
         
         //Logica para verificação de Material
@@ -261,7 +260,7 @@ app.post("/estoque",auth,(req,res)=>{
 
     var {title,qtd, user} = req.body
 
-    DB.padaria.push({ //Por ser um BD Falso sempre vai usar esse ID, quando se cadastra um Item, serem dados Temporarios
+    DB.equipamentos.push({ //Por ser um BD Falso sempre vai usar esse ID, quando se cadastra um Item, serem dados Temporarios
         id: 74,
         title,
         qtd,
@@ -343,7 +342,7 @@ app.put("/estoque/:id", (req,res) => {
         
         var id = parseInt(req.params.id)//conversão de ID para numero inteiro
 
-        var material = DB.padaria.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
+        var material = DB.equipamentos.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
 
         
         

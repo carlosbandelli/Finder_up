@@ -4,7 +4,7 @@ const app = express()
 const cors = require("cors")
 const jwt = require("jsonwebtoken")
 
-const JWTSecret = "FinderUp" // Senha de acesso para gerar token
+const JWTSecret = "Carlos" // Senha de acesso para gerar token
 
 app.use(cors())
 app.use(express.urlencoded({extended: false}))
@@ -76,25 +76,25 @@ var HATEOAS = (id) => {
 
 
 var DB = {
-    padaria:[
+    equipamentos:[
 
         {
             id: 23,
-            title: "Farinha de trigo",
+            title: "Motor",
             qtd: 10,
-            user: "Naruto"
+            user: "Carlos"
 
         },
         {
             id: 9,
-            title: "Fermento",
+            title: "Driver",
             qtd: 15,
             user: "Elizabeth"
 
         },
         {
             id:13,
-            title: "Leite integral",
+            title: "Conversor",
             qtd: 20,
             user: "Escanor" 
 
@@ -106,20 +106,20 @@ var DB = {
     users: [
         {
             id:1,
-            user: "Naruto",
-            email: "hokage@konoha.com",
-            password: "sasuke",
+            user: "Carlos",
+            email: "Carlos@carlos.com.br",
+            password: "carlos",
         },
         {
            id:3,
            user: "Elizabeth",
-           email: "bretanha@deusas.com", 
+           email: "Eli@beth.com.br", 
            password: "meliodas"
         },
         {
             id:100,
             user: "Escanor",
-            email:"Leão@orgulho.com",
+            email:"Lion@pride.com.br",
             password: "rosa"
         }
     ]
@@ -132,7 +132,7 @@ app.get("/estoque",auth, (req,res) => {
     
 
     res.statusCode = 200
-    res.json({ user: req.loggedUser, estoque: DB.padaria, _links: HATEOAS(':id')}) //Dessa forma aparece o id sem valor, mostrando que se alterar o id voce pode aplicar os metodos, mostrado pelo HATEOAS
+    res.json({ user: req.loggedUser, estoque: DB.equipamentos, _links: HATEOAS(':id')}) //Dessa forma aparece o id sem valor, mostrando que se alterar o id voce pode aplicar os metodos, mostrado pelo HATEOAS
 })
 
 //Rota para retorno de um produto do estoque
@@ -147,7 +147,7 @@ app.get("/estoque/:id",auth,(req,res) => {
 
         
 
-        var material = DB.padaria.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
+        var material = DB.equipamentos.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
 
         
         //Logica para verificação de Material
@@ -167,7 +167,7 @@ app.post("/estoque",auth,(req,res)=>{
 
     var {title,qtd, user} = req.body
 
-    DB.padaria.push({ //Por ser um BD Falso sempre vai usar esse ID, quando se cadastra um Item, serem dados Temporarios
+    DB.equipamentos.push({ //Por ser um BD Falso sempre vai usar esse ID, quando se cadastra um Item, serem dados Temporarios
         id: 74,
         title,
         qtd,
@@ -187,11 +187,11 @@ app.delete("/estoque/:id", auth, (req,res)=> {
     }else{
         
         var id = parseInt(req.params.id)//conversão de ID para numero inteiro
-        var index = DB.padaria.findIndex(m => m.id == id) 
+        var index = DB.equipamentos.findIndex(m => m.id == id) 
         if(index == -1){ //se retorna -1 o elemnto não existe
             res.sendStatus(404)
         }else{
-            DB.padaria.splice(index,1)// Aqui eu deleto um elemento  que esta nesse index
+            DB.equipamentos.splice(index,1)// Aqui eu deleto um elemento  que esta nesse index
             res.sendStatus(200) //Deleção feita com sucesso
         }
              
@@ -209,7 +209,7 @@ app.put("/estoque/:id", (req,res) => {
         
         var id = parseInt(req.params.id)//conversão de ID para numero inteiro
 
-        var material = DB.padaria.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
+        var material = DB.equipamentos.find(m => m.id == id)//Criei uma variavel que vai ter o id cadastrado no Banco de dados e se exister um id igual ele retorna o mesmo
 
         
         
