@@ -3,9 +3,12 @@ const express = require("express")
 const app = express()
 const cors = require("cors")
 const jwt = require("jsonwebtoken")
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocs = require("./swagger.json")
 
 const JWTSecret = "Carlos" // Senha de acesso para gerar token
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(cors())
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())

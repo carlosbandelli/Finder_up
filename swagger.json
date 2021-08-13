@@ -1,0 +1,128 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API C.R.U.D.",
+        "description": "Essa API tem como objetivo a manipulação dos produtos.",
+        "contact":{
+            "email": "carlosbandelliv@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url":"http://localhost:45678",
+            "description": "API de test"
+        }
+    ],
+    "paths": {
+        "/estoque": {
+            "post":{
+                "summary": "Cadastro de produto",
+                "description": "Essa rota será responsavel por cadastrar um novo produto",
+                "tags":["Estoque"],
+                "security": [{"bearerAuth": [] }],
+                "requestBody": {
+                    "content":{
+                        "application/json": {
+                            "schema" : {
+                                "$ref": "#/components/schemas/estoque"
+                            },
+                            "examples": {
+                                "estoque":{
+                                    "value":{
+                                      "user": "Carlos",
+                                      "title": "Motor",
+                                      "qtd": 5
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401":{
+                        "description": "Credenciais invalidas"
+                    },
+                    "400":{
+                        "description": "O Email enviado é invalido"
+                    },
+                    "200":{
+                        "description": "OK",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",                                    
+                                    "$ref": "#/components/schemas/estoque"
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+
+            },
+            "get":{
+                "description":"Busca de um produto pelo nome",
+                "summary": "Busca de um produto pelo nome",
+                "tags": ["Estoque"],
+                "parameters": [
+                    {
+                        "id":"id",
+                        "in": "query",
+                        "description": "id do produto",
+                        "required": true
+                    }
+                ],
+                "response":{
+                    "200": {
+                        "description": "OK",
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type": "object",                                    
+                                    "$ref": "#/components/schemas/estoque/:id"
+                                }
+                            }
+
+                        }
+
+                    }
+                    
+                }
+            }
+        }
+       
+    },
+
+    "components": {
+        "schemas": {
+            "Estoque":{
+                "type": "object",
+                "properties":{
+                    "user": {
+                        "type": "string"
+                    },
+                    "title":{
+                        "type": "string"
+                    },
+                    "qtd":{
+                        "type": "number"
+                    },
+                    "id":{
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "jwt"
+    
+            }
+        }
+    }
+  
+
+}
