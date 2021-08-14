@@ -30,6 +30,7 @@ function auth(req,res,next){ //Middleware
             }else{
                 req.token = token
                 req.loggedUser = {id: data.id,email:data.email}
+                req.loggedUser = {id: data.id,email:data.email,}
                 next() // reponsavel por passar requisição do middleware para a rota que o usuario quer ascessar
             }
         })
@@ -263,6 +264,7 @@ app.post("/auth",(req,res)=>{
             if(user.password == password){
 
             jwt.sign({id: user.id, email: user.email }, JWTSecret,{expiresIn:'48h'},(err,token)=>{ //payload - informação que estão dentro do token e tempo de expiração
+            jwt.sign({id: user.id, email: user.email,  }, JWTSecret,{expiresIn:'48h'},(err,token)=>{ //payload - informação que estão dentro do token e tempo de expiração
                 if(err){
                     res.status(400)
                     res.json({err:"Falha interna"})
