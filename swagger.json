@@ -19,7 +19,7 @@
             "post":{
                 "summary": "Cadastro de produto",
                 "description": "Essa rota será responsavel por cadastrar um novo produto",
-                "tags":["Estoque"],
+                "tags":["estoque"],
                 "security": [{"bearerAuth": [] }],
                 "requestBody": {
                     "content":{
@@ -64,7 +64,7 @@
             "get":{
                 "description":"Busca de um produto pelo nome",
                 "summary": "Busca de um produto pelo nome",
-                "tags": ["Estoque"],
+                "tags": ["estoque"],
                 "parameters": [
                     {
                         "id":"id",
@@ -96,7 +96,7 @@
 
     "components": {
         "schemas": {
-            "Estoque":{
+            "estoque":{
                 "type": "object",
                 "properties":{
                     "user": {
